@@ -3,26 +3,29 @@ import bcrypt from "bcryptjs";
 
 // define properties of User model
 const userSchema = new mongoose.Schema({
-	username:{
-		type: String,
-    required: true,
-    unique: true,
+			username:{
+			type: String,
+			required: true,
+			unique: true,
+		},
+		email:{
+			type: String,
+			required: true,
+			unique: true
+		},
+		password:{
+			type: String,
+			required: true,
+			minlength: 8,
+		},
+		profileImage:{
+			type:String,
+			default: ""
+		},
 	},
-	email:{
-		type: String,
-    required: true,
-    unique: true
-	},
-	password:{
-    type: String,
-    required: true,
-		minlength: 8,
-  },
-	profileImage:{
-		type:String,
-		default: ""
-	}
-});
+	// adds 'createdAt' and 'updatedAt' timestamp props to User object
+	{timestamps: true}
+);
 
 // hash password with bcrypt before saving User to DB
 userSchema.pre("save", async function(next) {

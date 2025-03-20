@@ -22,3 +22,5 @@ add type:module and dev script to package.json :
 
 setup server in index.js
 npm run dev
+
+create random string for password use (in terminal) : openssl rand -base64 32
