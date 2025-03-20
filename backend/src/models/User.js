@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 // define properties of User model
 const userSchema = new mongoose.Schema({
@@ -22,6 +23,17 @@ const userSchema = new mongoose.Schema({
 		default: ""
 	}
 });
+
+// hash password with bcrypt before saving User to DB
+userSchema.pre("save", async function(next) {
+  // only hash password if it has been modified (i.e., not from a pre-save hook)
+	if(!this.isModified("password")) return next();
+
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
+
+	next();
+})
 
 const User = mongoose.model("User", userSchema);
 

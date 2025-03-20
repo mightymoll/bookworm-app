@@ -38,6 +38,8 @@ router.post("/register", async (req, res) =>{
 			password,
 			profileImage,
 		})
+
+		await user.save();
 	}
 	catch(error){
 
