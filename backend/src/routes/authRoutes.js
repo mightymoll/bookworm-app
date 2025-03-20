@@ -60,8 +60,10 @@ router.post("/register", async (req, res) =>{
 			}
 		})
 	}
+	// if user couldn't be created, throw an error
 	catch(error){
-    res.status(500).json({error: error.message})
+		console.log("Error in Register route : ", error)
+    res.status(500).json({message: "Internal server error" })
   }
 })
 
