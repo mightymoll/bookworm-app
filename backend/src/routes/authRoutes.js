@@ -1,7 +1,13 @@
 import express from "express";
 import User from "../models/User.js"
+import jwt from "jsonwebtoken"
 
 const router = express.Router();
+
+// use jsonwebtoken to create a user token valid for 15 days
+const generateToken = (userId)=>{
+	jwt.sign({userId}, process.env.JWT_SECRET, {expiresIn: "15d" })
+}
 
 router.post("/register", async (req, res) =>{
 	try{
@@ -40,10 +46,23 @@ router.post("/register", async (req, res) =>{
 		})
 
 		await user.save();
+
+		const token = generateToken(user._id);
+
+// respond with token and user information when user is successfully created
+		res.status(201).json({
+			token,
+			user:{
+				id: user._id,
+				username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+			}
+		})
 	}
 	catch(error){
-
-	}
+    res.status(500).json({error: error.message})
+  }
 })
 
 router.post("/login", async (req, res) =>{
