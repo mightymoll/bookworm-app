@@ -1,0 +1,24 @@
+notes
+
+cmd k : to clear terminal
+create two folders in project : 'backend' and 'mobile'
+
+STARTUP (in terminal) : 
+cd backend
+npm init -y //creates package.json
+npm i express mongoose dotenv jsonwebtoken cloudinary bcryptjs cors //install dependencies
+npm i nodemon -D //install nodemon to use in DEVELOPMENT ONLY
+
+@backend
+create file index.js
+add type:module and dev script to package.json :
+
+"author": "",
+  "type": "module",
+
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+
+setup server in index.js
+npm run dev
