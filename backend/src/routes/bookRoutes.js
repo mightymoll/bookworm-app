@@ -1,12 +1,13 @@
 import express from "express";
 import cloudinary from "../lib/cloudinary.js";
+import protectRoute from "../middleware/auth.middleware.js";
 
 import Book from "../models/Book.js"
 
 const router = express.Router();
 
 // create a new book
-router.post("/", async(req,res)=>{
+router.post("/", protectRoute, async(req,res)=>{
 	try{
 		const {title, caption, rating, image} = req.body;
 
@@ -24,7 +25,7 @@ router.post("/", async(req,res)=>{
 			caption,
       rating,
       image: imageUrl,
-      // user: req.user.id,
+      user: req.user._id,
 		})
 
 		// save to mongoDB
