@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config";
+import cors from "cors";
 
 // import Route files
 import authRoutes from "./routes/authRoutes.js";
@@ -13,7 +14,10 @@ const app = express();
 const PORT = process.env.PORT;
 
 // middleware to parse JSON request bodies
-app.use(express.json())
+app.use(express.json());
+
+// middleware to use cors (Cross-Origin Resource Sharing) to allow requests from different origins
+app.use(cors());
 
 // define location of routes
 app.use("/api/auth", authRoutes);
