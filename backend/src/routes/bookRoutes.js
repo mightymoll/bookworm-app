@@ -83,6 +83,24 @@ router.delete(":/id", protectRoute, async(req,res)=>{
 		if(book.user.toSTring() !== req.user._id.toString())
 			return res.status(401).json({message: "Unauthorized"});
 
+		// delete image from Cloudinary
+		if(book.image && book.image.includes("cloudinary")){
+			try{
+				// get id of image from cloudinary URL (split the string)
+				// cloudinary URL example: https://res.cloudinary.com/de1rn4uto/image/upload/v1741568358/gyup61vejflxxw8igvi0.png
+				
+				// split() @ slashes then pop() to get last one (gyup61vejflxxw8igvi0.png)
+				// split @ '.' and get first part [0] for publicId (removes '.png')
+				// publicId ex : gyup61vejflxxw8igvi0
+				const publicId = book.image.split("/").pop().split(".")[0];
+				// delete image from cloudinary using publicId
+				await cloudinary.uploader.destroy(publicId);
+				console.log("Image deleted from Cloudinary successfully");
+			}
+			catch (deleteError){
+				console.log("Error deleting image from Cloudinary", deleteError)
+			}
+		}
 		// delete book from DB
 		await book.deleteOne();
 
