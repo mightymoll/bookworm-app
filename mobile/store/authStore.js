@@ -7,6 +7,7 @@ export const useAuthStore = create((set)=> ({
 	token: null,
 	isLoading: false,
 
+	// register a new user & set data in AsyncStorage
 	registerUser: async(username, email, password) =>{
 		set({isLoading:true});
 		try{
@@ -36,6 +37,27 @@ export const useAuthStore = create((set)=> ({
 			set({isLoading: false})
       return {success: false, error: error.message}
 		}
-	}
+	},
+
+	// check AsyncStorage for user & token data
+	checkAuth: async()=>{
+		try{
+			const token = await AsyncStorage.getItem("token");
+			const userJson=await AsyncStorage.getItem("user");
+			const user = userJson ? JSON.parse(userJson) : null;
+      
+			set ({token, user})
+		}
+		catch(error){
+			console.log("Auth check failed", error)
+		}
+	},
+
+	// logout user and remove data from AsyncStorage
+	logoutUser:async()=>{
+		await AsyncStorage.removeItem("token");
+		await AsyncStorage.removeItem("user");
+		set({token: null, user: null})
+	},
 
 }))
