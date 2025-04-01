@@ -24,3 +24,12 @@ setup server in index.js
 npm run dev
 
 create random string for password use (in terminal) : openssl rand -base64 32
+
+@mobile folder in terminal to setup app : 
+cd ./mobile
+npx create-expo-app@latest .
+
+then delete unwanted files:
+npm run reset-project (then 'n')
+
+to run app with expo @iphone: npx expo start (or npm start)
