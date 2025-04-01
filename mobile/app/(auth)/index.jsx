@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Image, TouchableOpacity, ActivityIndicator} from 'react-native'
+import { View, Text, TextInput, Image, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native'
 import styles from '../../assets/styles/login.styles'
 import { useState } from "react"
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -15,6 +15,10 @@ export default function Login() {
 	const handleLogin=()=>{};
 
 	return (
+		<KeyboardAvoidingView
+		style={{ flex: 1 }}
+		behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
 		<View style={styles.container}>
 			{/* illustration */}
 			<View style={styles.topIllustration}>
@@ -109,5 +113,6 @@ export default function Login() {
 				</View>
 			</View>
 		</View>
+		</KeyboardAvoidingView>
 	);
 }
