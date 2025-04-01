@@ -72,6 +72,18 @@ router.get("/", protectRoute, async(req,res)=>{
   }
 })
 
+// get Books created by the logged in User
+router.get("/user", protectRoute, async(req, res)=>{
+	try{
+		const books = await Book.find({user: req.user._id}).sort({createdAt: -1});
+		res.json(books)
+	}
+	catch(error){
+		console.error("Error getting user's books: ", error.message);
+		res.status(500).json({message: "Internal server error"})
+	}
+})
+
 // delete a Book
 router.delete(":/id", protectRoute, async(req,res)=>{
 	try{
