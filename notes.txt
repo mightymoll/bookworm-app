@@ -37,3 +37,6 @@ to run app with expo @iphone: npx expo start (or npm start)
 change app > _layout.tsx & index.tsx to .jsx filetype
 
 install expo-image to use @mobile: npx expo install expo-image
+
+image sources : unsplash, storyset
+font source: jetbrains.com/lp/mono/
