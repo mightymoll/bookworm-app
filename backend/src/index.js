@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import cors from "cors";
+import job from "./lib/cron.js"
 
 // import Route files
 import authRoutes from "./routes/authRoutes.js";
@@ -12,6 +13,9 @@ import { connectDB } from "./lib/db.js";
 
 const app = express();
 const PORT = process.env.PORT;
+
+// run cron function to keep API active
+job.start();
 
 // middleware to parse JSON request bodies
 app.use(express.json());

@@ -44,3 +44,7 @@ font source: jetbrains.com/lp/mono/
 mobile frontend data handling : 
 use Zustand for global state management : npm i Zustand
 install async storage from react : npm i @react-native-async-storage/async-storage
+
+backend API launched with Render.com from github repo
+
+use cron to send request every 14 mintues to keep API active : npm install cron
