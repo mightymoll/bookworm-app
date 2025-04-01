@@ -39,6 +39,35 @@ export const useAuthStore = create((set)=> ({
 		}
 	},
 
+	// login an existing user & set data in AsyncStorage
+	loginUser: async(email, password)=>{
+		set({isLoading: true});
+
+		try{
+			const response = await fetch("https://bookworm-app-xuoh.onrender.com/api/auth/login",{
+				method:"POST",
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({
+          email,
+          password
+        }),
+			});
+			const data = await response.json();
+			if (!response.ok) throw new Error(data.message || "Something went wrong")
+
+			await AsyncStorage.setItem("user", JSON.stringify(data.user));
+			await AsyncStorage.setItem("token", JSON.stringify(data.token));
+
+			set({user: data.user, token: data.token, isLoading: false})
+
+			return {success: true}
+		}
+		catch(error){
+      set({isLoading: false})
+      return {success: false, error: error.message}
+    }
+	},
+
 	// check AsyncStorage for user & token data
 	checkAuth: async()=>{
 		try{
