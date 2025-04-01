@@ -1,4 +1,4 @@
-import { View, Text, TextInput, KeyboardAvoidingView, Platform, TouchableOpacity, ActivityIndicator} from 'react-native'
+import { View, Text, TextInput, KeyboardAvoidingView, Platform, TouchableOpacity, ActivityIndicator, Alert} from 'react-native'
 import styles from "../../assets/styles/signup.styles"
 import { useState } from "react"
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -11,16 +11,17 @@ export default function Signup() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
 	// useAuthStore to get user state and test 'sayHello' function from store
-	const {user, sayHello} = useAuthStore();
+	const {user, isLoading, registerUser} = useAuthStore();
 
 	const router = useRouter();
 
-	const handleSignup=()=>{
-		// testing / setup console.log("hello") when signup button is pushed
-		sayHello();
+	const handleSignup = async () => {
+		// run 'registerUser' fn from authStore.js when signup button is pushed
+		const result = await registerUser(username, email, password);
+
+		if (!result.success) Alert.alert("Error :", result.error)
 	};
 		
 	return (
