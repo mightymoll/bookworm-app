@@ -6,18 +6,18 @@ const bookSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		caption:{
+		rating:{
+			type: Number,
+      min: 1,
+      max: 5,
+      required: true,
+		},
+		review:{
 			type: String,
       required: true,
 		},
 		image:{
 			type: String,
-      required: true,
-		},
-		rating:{
-			type: Number,
-      min: 1,
-      max: 5,
       required: true,
 		},
 		user:{

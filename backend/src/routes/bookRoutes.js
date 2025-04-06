@@ -9,10 +9,10 @@ const router = express.Router();
 // create a new book
 router.post("/", protectRoute, async(req,res)=>{
 	try{
-		const {title, caption, rating, image} = req.body;
+		const {title, review, rating, image} = req.body;
 
 		// check that all information has been entered
-		if(!title || !caption || !rating || !image) {
+		if(!title || !review || !rating || !image) {
 			return res.status(400).json({message: "Please provide all fields"});
 		}
 
@@ -22,7 +22,7 @@ router.post("/", protectRoute, async(req,res)=>{
 
 		const newBook = new Book({
 			title,
-			caption,
+			review,
       rating,
       image: imageUrl,
       user: req.user._id,

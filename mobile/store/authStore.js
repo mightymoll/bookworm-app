@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "../constants/api"
 
 // use zustand to create global states accessible throughout app
 export const useAuthStore = create((set)=> ({
@@ -11,7 +12,7 @@ export const useAuthStore = create((set)=> ({
 	registerUser: async(username, email, password) =>{
 		set({isLoading:true});
 		try{
-			const response = await fetch("https://bookworm-app-xuoh.onrender.com/api/auth/register", {
+			const response = await fetch(`${API_URL}/auth/register`, {
 				method:"POST",
 				headers: {'Content-Type': 'application/json',},
 				body: JSON.stringify({
@@ -44,7 +45,7 @@ export const useAuthStore = create((set)=> ({
 		set({isLoading: true});
 
 		try{
-			const response = await fetch("https://bookworm-app-xuoh.onrender.com/api/auth/login",{
+			const response = await fetch(`${API_URL}/auth/login`,{
 				method:"POST",
         headers: {'Content-Type': 'application/json',},
         body: JSON.stringify({

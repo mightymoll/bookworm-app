@@ -6,6 +6,8 @@ import COLORS from "../../constants/colors";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system"
+import { useAuthStore } from "../../store/authStore";
+import { API_URL } from "../../constants/api";
 
 export default function CreateTab() {
 // setup states
@@ -17,6 +19,7 @@ export default function CreateTab() {
 	const [loading, setLoading] = useState(false);
 
 	const router = useRouter();
+	const { token } = useAuthStore();
 
 	// allow user to choose image for Book review
 	const pickImage = async()=>{
@@ -49,19 +52,73 @@ export default function CreateTab() {
 				}
 				else{
 					// convert uri to base64
-          const imageBase64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
-          setImageBase64(imageBase64);
+					const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: 'base64' });
+          setImageBase64(base64);
 				}
       }
 		}
 		catch (error){
-
+			console.log("error encoding image file to base64")
 		}
 	};
 
-	const handleSubmit = async()=>{};
+	const handleSubmit = async()=>{
+		// check all field values are complete
+		if(!title || !review || !rating || !imageBase64){
+			Alert.alert("Error", "Please fill in all fields");
+			return;
+		}
+		// if everything is good, try to post book to API
+		try{
+			setLoading(true);
+ 
+			// get file extension from URI or default to jpg
+			const uriParts = image.split(".");
+			const fileType = uriParts[uriParts.length - 1];
+			const imageType = fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
+	 
+			const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
+ 
+			// post BOOK to API
+      const response = await fetch(`${API_URL}/books`, {
+				method: "POST",
+        headers: {
+					Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+				body: JSON.stringify({
+					title,
+					review,
+          rating: rating.toString(),
+          image: imageDataUrl,
+        })
+			})
+
+			const data = await response.text();
+			console.log(data)
+
+			// if response is not 'ok' then throw an error
+			if(!response.ok) throw new Error(data.message || 'Something went wrong');
+			
+			// else, alert 'success'
+			Alert.alert("Success", "Your book recommendation has been posted!");
+			
+			// reset form to defaults
+			setTitle("");
+			setReview("");
+			setRating(3);
+			setImage(null);
+			setImageBase64(null);
+			router.push("/")
+		}
+		catch(error){
+			console.error("Error creating post:", error);
+			Alert.alert("Error", error.message ||  "Something went wrong");
+		}
+		finally{	
+			setLoading(false);
+		}
+	};
 
 	// fills number of stars based on which is pressed & sets value of 'stars'
 	const renderRatingPicker = () =>{
