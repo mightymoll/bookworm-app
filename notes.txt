@@ -50,3 +50,7 @@ backend API launched with Render.com from github repo
 use cron to send request every 14 mintues to keep API active : npm install cron
 
 rnf = snippet to create react native functional component
+
+install expo image picker : npx expo install expo-image-picker
+
+install expo file system : npx expo install expo-file-system

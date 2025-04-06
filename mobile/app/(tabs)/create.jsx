@@ -1,10 +1,11 @@
-import { View, Text, TextInput, KeyboardAvoidingView, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, KeyboardAvoidingView, ScrollView, Platform, TouchableOpacity, Alert, Image, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import styles from '../../assets/styles/create.styles';
 import COLORS from "../../constants/colors";
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system"
 
 export default function CreateTab() {
 // setup states
@@ -12,12 +13,53 @@ export default function CreateTab() {
 	const [review, setReview] = useState("");
 	const [rating, setRating] = useState(3);
 	const [image, setImage] = useState(null); // to display selected image
-	const [imageString, setImageString] = useState(null); // string version of image
+	const [imageBase64, setImageBase64] = useState(null); // string version of image
 	const [loading, setLoading] = useState(false);
 
 	const router = useRouter();
 
-	const pickImage = async()=>{};
+	// allow user to choose image for Book review
+	const pickImage = async()=>{
+		try{
+			// request permission if not on web
+			if (Platform.OS !== "web"){
+				const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
+				if(status !== "granted"){
+					Alert.alert("Permission denied", "We need camera roll permissions to upload an image");
+					return;
+				}
+			}
+			// launch image library
+			const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "images",
+				allowsEditing: true,
+				quality: 0.5, //lower quality for smaller base64
+        aspect: [4, 3],
+        base64: true,
+        exif: true,
+      });
+
+      if (!result.canceled){
+        // set image state
+        setImage(result.assets[0].uri);
+
+				// if base64 is provided, use it
+				if(result.assets[0].base64){
+					setImageBase64(result.assets[0].base64);
+				}
+				else{
+					// convert uri to base64
+          const imageBase64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+						encoding: FileSystem.EncodingType.Base64,
+					});
+          setImageBase64(imageBase64);
+				}
+      }
+		}
+		catch (error){
+
+		}
+	};
 
 	const handleSubmit = async()=>{};
 
@@ -77,24 +119,56 @@ export default function CreateTab() {
               <Text style={styles.label}>Your Rating</Text>
               {renderRatingPicker()}
 						</View>
+
+						{/* IMAGE */}
+						<View style={styles.formGroup}>
+              <Text style={styles.label}>Image</Text>
+              <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+								{/* check if image exists, else use placeholder icon + text */}
+								{image ? (
+									<Image source={{ uri: image }} style={styles.previewImage} />
+								) : (
+									<View style={styles.placeholderContainer}>
+									<Ionicons name="image-outline" size={40} color={COLORS.textSecondary} />
+									<Text style={styles.placeholderText}>Tap to select image</Text>
+									</View>
+								)}
+							</TouchableOpacity>
+						</View>
+
 						{/* REVIEW */}
-						<View style={styles.formGroup}></View>
-						<Text style={styles.label}>What's special about it?</Text>
-						<View style={styles.inputContainer}>
-								<Ionicons
-								name="pencil-outline"
-                size={20}
-								color={COLORS.textSecondary}
-								style={styles.inputIcon}
-								/>
+						<View style={styles.formGroup}>
+							<Text style={styles.label}>What's special about it?</Text>
+							<View style={styles.caption}>
 								<TextInput
-                  style={styles.input}
-                  placeholder="Enter book description"
+									style={styles.textArea}
+									placeholder="Enter book description"
 									placeholderTextColor={COLORS.placeholderText}
-                  value={review}
-                  onChangeText={setReview}
+									value={review}
+									onChangeText={setReview}
+									multiline={true}
+									lineheight={20}
 								/>
-            	</View>
+							</View>
+						</View>
+						
+						{/* SUBMIT BUTTON */}
+						<TouchableOpacity style={styles.button} onPress={handleSubmit}
+						disabled={loading}>{
+							loading ? (
+								<ActivityIndicator color={COLORS.white} />
+							) : (
+								<>
+									<Ionicons 
+									name="cloud-upload-outline"
+									size={20}
+									color={COLORS.white}
+									style={styles.buttonIcon}
+									/>
+									<Text style={styles.buttonText}>Submit</Text>
+								</>
+							)}
+						</TouchableOpacity>
 					</View>
 				</View>
 			</ScrollView>
