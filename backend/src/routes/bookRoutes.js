@@ -1,15 +1,22 @@
 import express from "express";
 import cloudinary from "../lib/cloudinary.js";
 import protectRoute from "../middleware/auth.middleware.js";
+import multer from 'multer';
 
 import Book from "../models/Book.js"
+
+// use multer for image storage
+const upload = multer();
 
 const router = express.Router();
 
 // create a new book
 router.post("/", protectRoute, async(req,res)=>{
+	console.log("working on it!")
 	try{
-		const {title, review, rating, image} = req.body;
+		const { body, file } = req;
+		console.log(req)
+		console.log({ body, file });
 
 		// check that all information has been entered
 		if(!title || !review || !rating || !image) {

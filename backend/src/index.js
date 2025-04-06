@@ -1,7 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import cors from "cors";
-import job from "./lib/cron.js"
+import job from "./lib/cron.js";
 
 // import Route files
 import authRoutes from "./routes/authRoutes.js";

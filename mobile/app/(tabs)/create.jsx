@@ -5,17 +5,17 @@ import styles from '../../assets/styles/create.styles';
 import COLORS from "../../constants/colors";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system"
 import { useAuthStore } from "../../store/authStore";
 import { API_URL } from "../../constants/api";
 
 export default function CreateTab() {
+	const FormData = global.FormData;
+
 // setup states
 	const [title, setTitle] = useState("");
 	const [review, setReview] = useState("");
 	const [rating, setRating] = useState(3);
 	const [image, setImage] = useState(null); // to display selected image
-	const [imageBase64, setImageBase64] = useState(null); // string version of image
 	const [loading, setLoading] = useState(false);
 
 	const router = useRouter();
@@ -38,65 +38,52 @@ export default function CreateTab() {
 				allowsEditing: true,
 				quality: 0.5, //lower quality for smaller base64
         aspect: [4, 3],
-        base64: true,
         exif: true,
       });
 
       if (!result.canceled){
-        // set image state
         setImage(result.assets[0].uri);
-
-				// if base64 is provided, use it
-				if(result.assets[0].base64){
-					setImageBase64(result.assets[0].base64);
-				}
-				else{
-					// convert uri to base64
-					const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: 'base64' });
-          setImageBase64(base64);
-				}
-      }
+			}
 		}
 		catch (error){
-			console.log("error encoding image file to base64")
+			console.log("Error uploading image:", error)
 		}
 	};
 
 	const handleSubmit = async()=>{
 		// check all field values are complete
-		if(!title || !review || !rating || !imageBase64){
+		if(!title || !review || !rating || !image){
 			Alert.alert("Error", "Please fill in all fields");
 			return;
 		}
 		// if everything is good, try to post book to API
 		try{
 			setLoading(true);
- 
-			// get file extension from URI or default to jpg
-			const uriParts = image.split(".");
-			const fileType = uriParts[uriParts.length - 1];
-			const imageType = fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
-	 
-			const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
+
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("review", review);
+			formData.append("rating", rating);
+			// add image information to formData
+			formData.append("image",{
+				uri: image,
+        name: "image",
+        type: "file"
+			});
+
+			console.log("formData: ", formData)
  
 			// post BOOK to API
-      const response = await fetch(`${API_URL}/books`, {
+      const response = await fetch(`${API_URL}/books/`, {
 				method: "POST",
         headers: {
 					Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          'Content-Type': 'multipart/form-data'
         },
-				body: JSON.stringify({
-					title,
-					review,
-          rating: rating.toString(),
-          image: imageDataUrl,
-        })
-			})
+				body: formData,
+      });
 
-			const data = await response.text();
-			console.log(data)
-
+				console.log(response)
 			// if response is not 'ok' then throw an error
 			if(!response.ok) throw new Error(data.message || 'Something went wrong');
 			
