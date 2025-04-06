@@ -48,3 +48,5 @@ install async storage from react : npm i @react-native-async-storage/async-stora
 backend API launched with Render.com from github repo
 
 use cron to send request every 14 mintues to keep API active : npm install cron
+
+rnf = snippet to create react native functional component
